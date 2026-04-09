@@ -724,13 +724,15 @@
 
     <!-- Firebase SDK & Custom Logic Module -->
     <script type="module">
+        // Thay thế Firestore API bằng Realtime Database API vì config có chứa `databaseURL`
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, serverTimestamp, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        import { getDatabase, ref, push, onValue, remove, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
         // Cấu hình Firebase theo yêu cầu
         const firebaseConfig = {
             apiKey: "AIzaSyAj4p4yHlbv3Y5hyLToU5hs5uKEQab9QnI",
             authDomain: "data-lien-he.firebaseapp.com",
+            databaseURL: "https://data-lien-he-default-rtdb.asia-southeast1.firebasedatabase.app",
             projectId: "data-lien-he",
             storageBucket: "data-lien-he.firebasestorage.app",
             messagingSenderId: "778929411735",
@@ -739,7 +741,7 @@
         };
 
         const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
+        const db = getDatabase(app);
         let unsubscribeMessages = null;
 
         // --- Hệ thống Toast Notification ---
@@ -793,7 +795,8 @@
             try {
                 const userIp = await getIP();
                 
-                await addDoc(collection(db, "messages"), {
+                // Gửi dữ liệu vào Firebase Realtime Database
+                await push(ref(db, "messages"), {
                     name: document.getElementById('contactName').value,
                     email: document.getElementById('contactEmail').value,
                     subject: document.getElementById('contactSubject').value,
@@ -807,7 +810,7 @@
                 grecaptcha.reset(0); // Reset captcha sau khi gửi
             } catch (error) {
                 console.error("Lỗi Firebase: ", error);
-                window.showToast('Gửi thất bại. Vui lòng kiểm tra quyền Firestore Rules!', 'error');
+                window.showToast('Gửi thất bại. Vui lòng kiểm tra quyền Realtime Database Rules!', 'error');
             } finally {
                 btn.disabled = false;
                 btn.classList.remove('opacity-75', 'cursor-not-allowed', 'scale-[0.98]');
@@ -891,23 +894,32 @@
             const tbody = document.getElementById('messagesTableBody');
             tbody.innerHTML = '<tr><td colspan="5" class="text-center py-10"><i class="fa-solid fa-circle-notch fa-spin text-2xl text-primary"></i><p class="mt-2 text-gray-500">Đang đồng bộ dữ liệu...</p></td></tr>';
 
-            // Query sắp xếp tin nhắn mới nhất lên đầu
-            const q = query(collection(db, "messages"), orderBy("timestamp", "desc"));
-            
             if (unsubscribeMessages) unsubscribeMessages();
             
-            // onSnapshot: Lắng nghe realtime từ DB
-            unsubscribeMessages = onSnapshot(q, (querySnapshot) => {
+            // Lắng nghe realtime từ Realtime Database
+            const messagesRef = ref(db, 'messages');
+            unsubscribeMessages = onValue(messagesRef, (snapshot) => {
                 tbody.innerHTML = ''; 
                 
-                if (querySnapshot.empty) {
+                if (!snapshot.exists()) {
                     tbody.innerHTML = '<tr><td colspan="5" class="text-center py-12 text-gray-500 text-lg"><i class="fa-regular fa-folder-open text-4xl mb-3 block opacity-50"></i>Hộp thư đến trống.</td></tr>';
                     return;
                 }
 
-                querySnapshot.forEach((docSnap) => {
-                    const data = docSnap.data();
-                    const dateObj = data.timestamp ? new Date(data.timestamp.toDate()) : null;
+                const data = snapshot.val();
+                const messagesList = [];
+                
+                // Chuyển object thành array để sort
+                for (let key in data) {
+                    messagesList.push({ id: key, ...data[key] });
+                }
+
+                // Sắp xếp tin nhắn mới nhất lên đầu
+                messagesList.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+
+                messagesList.forEach((msg) => {
+                    // Trong RTDB, timestamp là mili giây (number)
+                    const dateObj = msg.timestamp ? new Date(msg.timestamp) : null;
                     const dateStr = dateObj ? `${dateObj.toLocaleTimeString('vi-VN')} <br> <span class="text-xs text-gray-500">${dateObj.toLocaleDateString('vi-VN')}</span>` : 'Đang xử lý...';
                     
                     const tr = document.createElement('tr');
@@ -915,18 +927,18 @@
                     tr.innerHTML = `
                         <td class="px-6 py-5 whitespace-nowrap text-sm text-gray-300">${dateStr}</td>
                         <td class="px-6 py-5">
-                            <div class="font-bold text-white text-base">${data.name}</div>
-                            <div class="text-xs text-primary font-mono mt-1 bg-primary/10 inline-block px-2 py-0.5 rounded">IP: ${data.ip || 'N/A'}</div>
+                            <div class="font-bold text-white text-base">${msg.name}</div>
+                            <div class="text-xs text-primary font-mono mt-1 bg-primary/10 inline-block px-2 py-0.5 rounded">IP: ${msg.ip || 'N/A'}</div>
                         </td>
                         <td class="px-6 py-5">
-                            <div class="text-sm font-semibold text-gray-200 mb-1">${data.subject}</div>
-                            <div class="text-xs"><a href="mailto:${data.email}" class="text-gray-400 hover:text-white transition"><i class="fa-regular fa-envelope mr-1"></i>${data.email}</a></div>
+                            <div class="text-sm font-semibold text-gray-200 mb-1">${msg.subject}</div>
+                            <div class="text-xs"><a href="mailto:${msg.email}" class="text-gray-400 hover:text-white transition"><i class="fa-regular fa-envelope mr-1"></i>${msg.email}</a></div>
                         </td>
                         <td class="px-6 py-5">
-                            <div class="text-sm text-gray-300 bg-gray-950 p-3 rounded-lg border border-gray-800 break-words whitespace-pre-wrap">${data.message}</div>
+                            <div class="text-sm text-gray-300 bg-gray-950 p-3 rounded-lg border border-gray-800 break-words whitespace-pre-wrap">${msg.message}</div>
                         </td>
                         <td class="px-6 py-5 text-center">
-                            <button onclick="window.deleteMessage('${docSnap.id}')" class="text-red-500 hover:text-white w-10 h-10 rounded-full hover:bg-red-600 transition shadow-lg opacity-40 group-hover:opacity-100 transform group-hover:scale-110" title="Xóa tin nhắn">
+                            <button onclick="window.deleteMessage('${msg.id}')" class="text-red-500 hover:text-white w-10 h-10 rounded-full hover:bg-red-600 transition shadow-lg opacity-40 group-hover:opacity-100 transform group-hover:scale-110" title="Xóa tin nhắn">
                                 <i class="fa-solid fa-trash-can"></i>
                             </button>
                         </td>
@@ -935,15 +947,15 @@
                 });
             }, (error) => {
                 console.error("Lỗi đồng bộ Firebase:", error);
-                tbody.innerHTML = '<tr><td colspan="5" class="text-center py-8 text-red-500">Lỗi khi tải dữ liệu! Cần cấp quyền Firestore Database (Security Rules).</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center py-8 text-red-500">Lỗi khi tải dữ liệu! Cần cấp quyền Realtime Database Rules.</td></tr>';
             });
         };
 
         window.deleteMessage = async (id) => {
-            // Xác nhận mượt bằng logic cơ bản (bạn có thể thay thế bằng Modal tuỳ ý)
+            // Xác nhận mượt bằng logic cơ bản
             if (confirm('⚠️ Bạn có chắc chắn muốn xóa vĩnh viễn tin nhắn này không?')) {
                 try {
-                    await deleteDoc(doc(db, "messages", id));
+                    await remove(ref(db, `messages/${id}`));
                     window.showToast('Đã xóa thành công!', 'success');
                 } catch (error) {
                     console.error("Lỗi xoá Firebase: ", error);
@@ -954,3 +966,4 @@
     </script>
 </body>
 </html>
+
