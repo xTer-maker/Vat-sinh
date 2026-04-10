@@ -121,7 +121,7 @@
         /* --- Custom Additions for Firebase & Admin --- */
         .toast-container {
             position: fixed;
-            bottom: 85px; /* Nâng lên để không đè vào nút Admin */
+            bottom: 85px; 
             right: 20px;
             z-index: 9999;
             display: flex;
@@ -160,7 +160,7 @@
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* Admin Modal Transitions (Fade + Slide Up) */
+        /* Admin Modal Transitions */
         .admin-modal {
             opacity: 0;
             pointer-events: none;
@@ -171,7 +171,7 @@
             pointer-events: auto;
         }
         .admin-modal-content {
-            transform: translateY(40px); /* Đổi thành trượt từ dưới lên */
+            transform: translateY(40px);
             transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .admin-modal.active .admin-modal-content {
@@ -213,6 +213,10 @@
                         Hình ảnh
                         <span class="absolute bottom-0 left-0 w-full h-0.5 bg-primary transform origin-left transition-transform duration-300 scale-x-0 group-hover:scale-x-100"></span>
                     </button>
+                    <button onclick="navigate('location')" class="nav-btn text-gray-300 font-semibold hover:text-primary transition-colors py-2 relative group">
+                        Địa điểm
+                        <span class="absolute bottom-0 left-0 w-full h-0.5 bg-primary transform origin-left transition-transform duration-300 scale-x-0 group-hover:scale-x-100"></span>
+                    </button>
                     <button onclick="navigate('contact')" class="nav-btn text-gray-300 font-semibold hover:text-primary transition-colors py-2 relative group">
                         Liên hệ
                         <span class="absolute bottom-0 left-0 w-full h-0.5 bg-primary transform origin-left transition-transform duration-300 scale-x-0 group-hover:scale-x-100"></span>
@@ -235,6 +239,7 @@
                 <button onclick="navigate('about')" class="nav-btn-mobile block w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-800">Giới thiệu</button>
                 <button onclick="navigate('activity')" class="nav-btn-mobile block w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-800">Hoạt động lễ hội</button>
                 <button onclick="navigate('gallery')" class="nav-btn-mobile block w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-800">Hình ảnh</button>
+                <button onclick="navigate('location')" class="nav-btn-mobile block w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-800">Địa điểm</button>
                 <button onclick="navigate('contact')" class="nav-btn-mobile block w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-800">Liên hệ</button>
             </div>
         </div>
@@ -495,8 +500,61 @@
             </div>
         </section>
 
+        <!-- ==================== ĐỊA ĐIỂM ==================== -->
+        <section id="location" class="page py-20 bg-dark">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-16 reveal">
+                    <h2 class="text-4xl md:text-5xl font-bold text-white mb-4">Địa Điểm <span class="text-primary">Tổ Chức</span></h2>
+                    <div class="w-24 h-1 bg-primary mx-auto rounded-full mb-6"></div>
+                    <p class="text-gray-400 max-w-2xl mx-auto">Tìm về cội nguồn văn hóa truyền thống tại hạ lưu ngã ba sông Hương.</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
+                    <!-- Text Info -->
+                    <div class="reveal">
+                        <div class="bg-gray-900 p-8 rounded-2xl border border-gray-800 shadow-xl relative overflow-hidden">
+                            <div class="absolute top-0 left-0 w-1 h-full bg-primary"></div>
+                            <i class="fa-solid fa-quote-left text-4xl text-gray-700 absolute top-6 right-6 opacity-50"></i>
+                            
+                            <p class="text-gray-300 leading-relaxed mb-4 text-justify text-lg">
+                                Hằng năm cứ vào ngày mồng 10 tháng Giêng Âm lịch, người dân xã Phú Mậu, huyện Phú Vang, tỉnh Thừa Thiên Huế lại giong trống mở cờ, đến hẹn lại lên tổ chức Hội Vật làng Sình. Hội Vật làng Sình là nét đẹp văn hóa truyền thống được gìn giữ và phát huy suốt mấy trăm năm qua kể từ thời chúa Nguyễn.
+                            </p>
+                            
+                            <p class="text-gray-300 leading-relaxed text-justify text-lg">
+                                Hội vật được diễn ra tại Lại Ân hay còn gọi là làng Sình. Đây là một trong những ngôi làng được hình thành khá sớm ở Đàng Trong, nằm ven sông Hương, ở hạ lưu ngã ba Sình (trước thuộc huyện Tư Vinh hay tổng Mậu Tài), nay là xã Phú Mậu huyện Phú Vang, tỉnh Thừa Thiên Huế. Làng Sình cũng là địa chỉ cuối cùng về phương Nam còn lưu giữ truyền thống vật võ.
+                            </p>
+                            
+                            <div class="mt-8 flex items-center gap-3 text-primary font-semibold text-lg bg-darker/50 p-4 rounded-xl border border-gray-800 inline-block w-full">
+                                <i class="fa-solid fa-location-dot"></i>
+                                <span>Đình làng Sình, Phú Mậu, Phú Vang, Thừa Thiên Huế</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Google Map Embed -->
+                    <div class="reveal delay-200 h-[400px] lg:h-[500px]">
+                        <div class="w-full h-full rounded-2xl overflow-hidden border border-gray-800 shadow-xl relative bg-gray-900 group">
+                            <!-- Sử dụng iframe query map để ghim đúng tọa độ yêu cầu, hỗ trợ thu phóng và kéo thả trên web -->
+                            <iframe 
+                                src="https://maps.google.com/maps?q=16.524478,107.577620&hl=vi&z=16&output=embed" 
+                                class="w-full h-full border-0 grayscale-[30%] group-hover:grayscale-0 transition-all duration-500" 
+                                allowfullscreen="" 
+                                loading="lazy" 
+                                referrerpolicy="no-referrer-when-downgrade">
+                            </iframe>
+                            
+                            <!-- Nút mở trực tiếp ra ứng dụng Google Maps -->
+                            <a href="https://maps.google.com/maps?q=16.524478,107.577620" target="_blank" class="absolute bottom-4 right-4 bg-primary text-darker font-bold px-4 py-2 rounded-lg shadow-lg hover:bg-primaryHover transition-colors flex items-center gap-2">
+                                <i class="fa-solid fa-map-location-dot"></i> Mở Bản Đồ
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <!-- ==================== LIÊN HỆ ==================== -->
-        <section id="contact" class="page py-20 bg-dark">
+        <section id="contact" class="page py-20 bg-darker">
             <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center mb-16 reveal">
                     <h2 class="text-4xl md:text-5xl font-bold text-white mb-4">Kết Nối <span class="text-primary">Với Chúng Tôi</span></h2>
@@ -820,18 +878,16 @@
         };
 
         // --- CẤU HÌNH THÔNG TIN ĐĂNG NHẬP ADMIN ---
-        // Hướng dẫn đổi mật khẩu: Thay đổi chuỗi giá trị trong ngoặc kép bên dưới
         const ADMIN_USER = "admin";
         const ADMIN_PASS = "trannguyen200829@";
 
         // --- Logic Admin Đăng Nhập ---
         window.checkAdminState = () => {
-            // Kiểm tra trong localStorage xem đã login chưa
             const isLoggedIn = localStorage.getItem('isAdminLoggedIn');
             if (isLoggedIn === 'true') {
-                openAdminDashboard(); // Nếu đã login, mở thẳng dashboard
+                openAdminDashboard(); 
             } else {
-                window.openAdminLogin(); // Chưa login thì mở modal form
+                window.openAdminLogin(); 
             }
         };
 
@@ -842,7 +898,7 @@
         window.closeAdminLogin = () => {
             document.getElementById('adminLoginModal').classList.remove('active');
             document.getElementById('adminLoginForm').reset();
-            try { grecaptcha.reset(1); } catch(e){} // form login là index 1
+            try { grecaptcha.reset(1); } catch(e){} 
         };
 
         window.handleAdminLogin = (e) => {
@@ -858,9 +914,7 @@
             const pass = document.getElementById('adminPass').value;
 
             if (user === ADMIN_USER && pass === ADMIN_PASS) {
-                // Lưu trạng thái đăng nhập vào trình duyệt
                 localStorage.setItem('isAdminLoggedIn', 'true');
-                
                 window.closeAdminLogin();
                 window.showToast('Đăng nhập quản trị viên thành công!', 'success');
                 openAdminDashboard();
@@ -870,7 +924,6 @@
         };
 
         window.logoutAdmin = () => {
-            // Xoá trạng thái lưu login để bắt đăng nhập lại lần sau
             localStorage.removeItem('isAdminLoggedIn');
             window.closeAdminDashboard();
             window.showToast('Đã đăng xuất thành công!', 'success');
@@ -885,7 +938,7 @@
         window.closeAdminDashboard = () => {
             document.getElementById('adminDashboardModal').classList.remove('active');
             if (unsubscribeMessages) {
-                unsubscribeMessages(); // Ngắt kết nối realtime để tiết kiệm tài nguyên
+                unsubscribeMessages(); 
                 unsubscribeMessages = null;
             }
         };
@@ -896,7 +949,6 @@
 
             if (unsubscribeMessages) unsubscribeMessages();
             
-            // Lắng nghe realtime từ Realtime Database
             const messagesRef = ref(db, 'messages');
             unsubscribeMessages = onValue(messagesRef, (snapshot) => {
                 tbody.innerHTML = ''; 
@@ -909,16 +961,13 @@
                 const data = snapshot.val();
                 const messagesList = [];
                 
-                // Chuyển object thành array để sort
                 for (let key in data) {
                     messagesList.push({ id: key, ...data[key] });
                 }
 
-                // Sắp xếp tin nhắn mới nhất lên đầu
                 messagesList.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
 
                 messagesList.forEach((msg) => {
-                    // Trong RTDB, timestamp là mili giây (number)
                     const dateObj = msg.timestamp ? new Date(msg.timestamp) : null;
                     const dateStr = dateObj ? `${dateObj.toLocaleTimeString('vi-VN')} <br> <span class="text-xs text-gray-500">${dateObj.toLocaleDateString('vi-VN')}</span>` : 'Đang xử lý...';
                     
@@ -952,7 +1001,6 @@
         };
 
         window.deleteMessage = async (id) => {
-            // Xác nhận mượt bằng logic cơ bản
             if (confirm('⚠️ Bạn có chắc chắn muốn xóa vĩnh viễn tin nhắn này không?')) {
                 try {
                     await remove(ref(db, `messages/${id}`));
